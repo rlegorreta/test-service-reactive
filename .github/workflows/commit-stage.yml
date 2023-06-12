@@ -1,0 +1,91 @@
+name: Commit Stage
+on: push
+
+env:
+  REGISTRY: ghcr.io                           # Uses the GitHub Container Registry
+  IMAGE_NAME: rlegorreta/auth-service         # The image name all are lowe-case
+  VERSION: latest
+
+jobs:
+  build:                                      # The job´s unique identifier.
+    name: Build and Test                      # The type of machine where the job should run.
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read                          # Permission to check out current Git repository.
+      security-events: write                  # Permission to submit security events to GitHub.
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3             # Checks out the current Git repository (config-service).
+      - name: Set up JDK
+        uses: actions/setup-java@v3           # Install and configures a Java runtime.
+        with:                                 # Defines which version, distribution, and cache type to use.
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      - name: Build, unit tests and integration tests
+        run: |
+          chmod +x gradlew
+          ./gradlew build
+      - name: Code vulnerability scanning
+        uses: anchore/scan-action@v3          # Scans the codebase for vulnerabilities using grype.
+        id: scan                              # Assigns an identifier to the current step so that it can be referenced from subsequent steps
+        with:
+          path: "${{ github.workspace }}"     # The path to the checked-out repository.
+          fail-build: false                   # Whether to fail the build in the event of security vulnerabilities
+          severity-cutoff: high               # Minimum security category to be considered (low, medium, high, critical)
+      - name: Upload vulnerability report
+        uses: github/codeql-action/upload-sarif@v2 # Uploads the security vulnerability report to GitHub (SARIF format)
+        if: success() || failure()            # Uploads the report even if the previous step fails
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }} # Fetches the report from the output of the previous step.
+      - name: Validate Kubernetes manifests
+        uses: stefanprodan/kube-tools@v1      # An action capable of installing useful tools to work with Kubernetes
+        with:
+          kubectl: 1.24.3                     # Includes the Kubernetes CLI in the installation
+          kubeval: 0.16.1                     # Includes Kubeval in the installation. Validate k8s directory.
+          command: |
+            kubeval --strict -d k8s
+  package:                                    # The job´s unique identifier.
+    name: Package and Publish
+    if: ${{ github.ref == 'refs/heads/master' }}  # Runs the job only on the master branch
+    needs: [ build ]                          # Runs the job only if the “build” job completes successfully.
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read                          # Permission to check out the current Git repository
+      packages: write                         # Permission to upload images to GitHub Container Registry
+      security-events: write                  # Permission to submit security events to GitHub
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3             # Checks out the current Git repository (config-service)
+      - name: Set up JDK
+        uses: actions/setup-java@v3           # Installs and configures a Java runtime
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      - name: Build container image
+        # Relies on the Buildpacks integration in Spring Boot to build a container image and defines the name for the release candidate
+        run: |
+          chmod +x gradlew
+          ./gradlew bootBuildImage \
+            --imageName ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+      - name: OCI image vulnerability scanning
+        uses: anchore/scan-action@v3        # Scans the release candidate image for vulnerabilities using grype
+        id: scan
+        with:                               # The image to scan is the release candidate.
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          fail-build: false                 # It won’t fail the build if vulnerabilities are found in the image.
+          severity-cutoff: high
+      - name: Upload vulnerability report
+        uses: github/codeql-action/upload-sarif@v2  # Uploads the security vulnerability report to GitHub (SARIF format)
+        if: success() || failure()
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+      - name: Log into container registry
+        uses: docker/login-action@v2        # Authenticates with GitHub Container Registry
+        with:
+          registry: ${{ env.REGISTRY }}     # The registry value as defined in the environment variable
+          username: ${{ github.actor }}     # The GitHub username of the current user, provided by GitHub Actions
+          password: ${{ secrets.GITHUB_TOKEN }} # The token needed to authenticate with registry, provided by GitHub Actions
+      - name: Publish container image
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}  # Pushes the release candidate
