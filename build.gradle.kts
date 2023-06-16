@@ -19,6 +19,20 @@ repositories {
 	mavenLocal()
 	mavenCentral()
 	maven { url = uri("https://repo.spring.io/snapshot") }
+
+	maven {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/" +
+		project.findProperty("registryPackageUrl") as String? ?:
+				System.getenv("URL_PACKAGE") ?:
+				"rlegorreta/ailegorreta-kit")
+		credentials {
+			username = project.findProperty("registryUsername") as String? ?:
+								System.getenv("USERNAME") ?:
+								"rlegorreta"
+			password = project.findProperty("registryToken") as String? ?: System.getenv("TOKEN")
+		}
+	}
 }
 
 extra["springCloudVersion"] = "2022.0.3-SNAPSHOT"
@@ -46,7 +60,7 @@ dependencies {
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 	runtimeOnly("io.opentelemetry.javaagent:opentelemetry-javaagent:${property("otelVersion")}")
 
-	implementation("com.ailegorreta:ailegorreta-commons-utils:${property("ailegorreta-kit-version")}")
+	implementation("com.ailegorreta:ailegorreta-kit-commons-utils:${property("ailegorreta-kit-version")}")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
