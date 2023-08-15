@@ -38,6 +38,14 @@ import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
+/**
+ * AuthServiceApplicationTests. This is a good example to show how can we create test containers for Neo4j.
+ * The same concept applies to testContainers with Postgres database.
+ *
+ * @project : auth-service
+ * @author rlh
+ * @date June 2023
+ */
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 /* ^ Disables the default behavior of relying on an embedded test database since we want to use Testcontainers */

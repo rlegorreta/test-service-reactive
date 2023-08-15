@@ -26,6 +26,8 @@ spring:
         initial-interval: 1000        # Initial retry interval for backoff (ms)
         max-interval: 2000            # Maximum retry interval for backoff (ms)
         multiplier: 1.1               # Multiplier to compute the next interval
+  jpa:
+    open-in-view: true
   flyway:
     enabled: true
     locations: classpath:/db/migration
@@ -43,6 +45,7 @@ logging:
       netflix: WARN
       ailegorreta:
         authservice: WARN
+        authservice.config: DEBUG
     org:
       springframework:
         web: WARN

@@ -56,7 +56,7 @@ import org.springframework.security.core.GrantedAuthority
  *
  * @author rlh
  * @project : auth-service
- * @date May 2023
+ * @date August 2023
  *
  */
 @Node("Facultad")
@@ -78,7 +78,9 @@ data class Facultad (@Id @GeneratedValue(GeneratedValue.InternalIdGenerator::cla
 
     // Spring security methods
     @JsonProperty("authority")
-    override fun getAuthority() = "ROLE_" + nombre.uppercase()
+    override fun getAuthority() = /* "AUTHORITY_" + */ nombre.uppercase()
+    // ^ See how this security make difference between Roles & Granted Authorities:
+    // https://www.baeldung.com/spring-security-granted-authority-vs-role
 
     @JsonProperty("authority")
     fun setAuthority(value: String) {}

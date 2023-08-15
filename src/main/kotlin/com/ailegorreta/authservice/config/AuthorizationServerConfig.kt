@@ -64,7 +64,7 @@ import java.util.stream.Collectors
  *
  * @project : auth-service
  * @author rlh
- * @date May 2023
+ * @date August 2023
  */
 @Configuration(proxyBeanMethods = false)
 class AuthorizationServerConfig {
@@ -113,7 +113,8 @@ class AuthorizationServerConfig {
 
         // @formatter:off
         http
-            .exceptionHandling{  exceptions -> exceptions.authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/login"))}
+            .exceptionHandling{  exceptions ->
+                exceptions.authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/login"))}
             // .oauth2ResourceServer(OAuth2ResourceServerConfigurer<*>::jwt)
             // .cors(Customizer.withDefaults())
             // .formLogin().loginPage("/custom-login").failureForwardUrl("/custom-login?error=true")
@@ -173,14 +174,6 @@ class AuthorizationServerConfig {
             UIApplications.secret("acmeui")!!,
             "acme.facultad"
         )
-        val iam = build3ScopesRegisteredMicroService(
-            registeredClientRepository,
-            "iam",
-            UIApplications.secret("iam")!!,
-            "iam.compania",
-            "iam.facultad",
-            "iam.estadistica"
-        )
         val preference = build1ScopesRegisteredMicroService(
             registeredClientRepository,
             "preference",
@@ -207,22 +200,6 @@ class AuthorizationServerConfig {
             registeredClientRepository,
             "cartera",
             UIApplications.secret("cartera")!!,
-            "cartera.read"
-        )
-        val param = build1ScopesRegisteredMicroService(
-            registeredClientRepository,
-            "param",
-            UIApplications.secret("param")!!,
-            "sys.facultad"
-        )
-        val cache = build5ScopesRegisteredMicroService(
-            registeredClientRepository,
-            "cache",
-            UIApplications.secret("cache")!!,
-            "sys.facultad",
-            "acme.facultad",
-            "iam.facultad",
-            "iam.compania",
             "cartera.read"
         )
         val mail = build5ScopesRegisteredMicroService(
@@ -261,10 +238,55 @@ class AuthorizationServerConfig {
             "secret2",
             "messagex"
         )
+        val iamService = build3ScopesRegisteredMicroService(
+            registeredClientRepository,
+            "iam-service",
+            UIApplications.secret("iam-service")!!,
+            "iam.compania",
+            "iam.facultad",
+            "iam.estadistica"
+        )
+        val paramService = build1ScopesRegisteredMicroService(
+            registeredClientRepository,
+            "param-service",
+            UIApplications.secret("param-service")!!,
+            "sys.facultad"
+        )
+        val cacheSeervice = build5ScopesRegisteredMicroService(
+            registeredClientRepository,
+            "cache-service",
+            UIApplications.secret("cache-service")!!,
+            "sys.facultad",
+            "acme.facultad",
+            "iam.facultad",
+            "iam.compania",
+            "cartera.read"
+        )
+        val gatewayService = build1ScopesRegisteredClient(
+            registeredClientRepository,
+            "gateway-service",
+            "8072",
+            UIApplications.secret("gateway-service")!!,
+            "iam.facultad"
+        )
+        val testService = build1ScopesRegisteredMicroService(
+            registeredClientRepository,
+            "test-service",
+            UIApplications.secret("test-service")!!,
+            "iam.facultad"
+        )
+        val testServiceReactive = build1ScopesRegisteredMicroService(
+            registeredClientRepository,
+            "test-service-reactive",
+            UIApplications.secret("test-service-reactive")!!,
+            "iam.facultad"
+        )
         // TODO if works with JDBC repository delete this comment. See bellow
         // return InMemoryRegisteredClientRepository(iamui, udfui, carteraui, sysui, acmeui,
-        //                                           iam, preference, udf, cartera, param, cache, mail, bub, expediente,
-        //                                           firstClient, secondClient)
+        //                                           preference, udf, cartera, param, mail, bub, expediente,
+        //                                           firstClient, secondClient,
+        //                                           iamService, paramService, cacheService,
+        //                                           gatewayService, testService, testServiceReactive)
         return registeredClientRepository
     }
 

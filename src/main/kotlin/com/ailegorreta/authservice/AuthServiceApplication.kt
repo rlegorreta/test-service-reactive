@@ -30,7 +30,6 @@ import org.neo4j.driver.Driver
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.core.convert.converter.GenericConverter
@@ -49,7 +48,6 @@ import java.util.*
  * @date June 2023
  */
 @SpringBootApplication
-@ConfigurationPropertiesScan("com.ailegorreta.authservice.config")
 class AuthServiceApplication
 
 fun main(args: Array<String>) {
@@ -81,7 +79,7 @@ class DataInitializer constructor(private val facultadRepository: FacultadReposi
 		if (facultadRepository.count() == 0L) {
 			logger.info("The Noe4j database is empty... We fill it with minimum security data")
 			BufferedReader(InputStreamReader(this.javaClass.getResourceAsStream(
-				  "${serviceConfig.neo4j.flyway.locations}/iamDBstart.cypher"))).use { testReader ->
+				  "${serviceConfig.neo4jFlywayLocations}/iamDBstart.cypher"))).use { testReader ->
 				driver.session().use { session ->
 					// NOTE: This command will erase ALL database data. Comment if we don´t want to
 					//       delete all data since the iamDBstart.cypher utilizes MERGE instead of CREATE

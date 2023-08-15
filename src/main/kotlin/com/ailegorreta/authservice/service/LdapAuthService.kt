@@ -44,9 +44,9 @@ import javax.naming.directory.SearchControls
  */
 @Service("lsLdapAuthService")
 class LdapAuthService constructor(serviceConfig: ServiceConfig): HasLogger {
-    private val ldapURI = serviceConfig.ldap.uri
-    private val adminUser = serviceConfig.ldap.adminuser
-    private val credentials = serviceConfig.ldap.credentials
+    private val ldapURI = serviceConfig.ldapURI
+    private val adminUser = serviceConfig.ldapAdminuser
+    private val credentials = serviceConfig.ldapCredentials
 
     @Throws(CommunicationException::class)
     fun authenticateUserAndGetInfo(username: String, password: String): AuthenticateResult {
@@ -66,7 +66,7 @@ class LdapAuthService constructor(serviceConfig: ServiceConfig): HasLogger {
         searchControls.searchScope = SearchControls.SUBTREE_SCOPE
 
         val searchResults = adminContext.search(
-                                "dc=lmass,dc=com",
+                                "dc=ailegorreta,dc=com",
                                 "(&(objectClass=person)(cn=$username))",
                                 searchControls
                             )

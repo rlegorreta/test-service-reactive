@@ -28,7 +28,7 @@ package com.ailegorreta.authservice.config
  *
  * @author rlh
  * @project : auth-service
- * @date May 2023
+ * @date August 2023
  */
 class UIApplications() {
 
@@ -39,16 +39,19 @@ class UIApplications() {
                                                      "sysui" to "sysuisecret",
                                                      "sysuimob" to "sysuimobsecret",
                                                      "acmeui" to "acmeuisecret",
-                                                     "iam" to "iamsecret",
                                                      "preference" to "preferencesecret",
                                                      "audit" to "auditsecret",
                                                      "udf" to "udfsecret",
                                                      "cartera" to "carterasecret",
-                                                     "param" to "paramsecret",
-                                                     "cache" to "cachesecret",
                                                      "mail" to "mailsecret",
                                                      "bup" to "bupsecret",
-                                                     "expediente" to "expedientesecret"
+                                                     "expediente" to "expedientesecret",
+                                                     "param-service" to "param-service-secret",
+                                                     "iam-service" to "iam-service-secret",
+                                                     "cache-service" to "cache-service-secret",
+                                                     "gateway-service" to "gateway-service-secret",
+                                                     "test-service" to "test-service-secret",
+                                                     "test-service-reactive" to "test-service-reactive-secret"
                                                     )
 
         fun isValidApplication(appName: String, secret: String) =

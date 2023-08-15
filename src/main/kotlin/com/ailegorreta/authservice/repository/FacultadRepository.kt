@@ -30,7 +30,7 @@ import org.springframework.data.repository.query.Param
 import java.util.*
 
 /**
- * Interface de Neo4j repository for Entity Facultad.
+ * Interface for Neo4j repository for Entity Facultad.
  *
  * @see SpringData with Neo4j for more information
  *

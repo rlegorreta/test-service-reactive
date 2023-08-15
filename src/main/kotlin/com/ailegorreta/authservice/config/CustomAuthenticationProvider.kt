@@ -44,7 +44,7 @@ import javax.naming.CommunicationException
  *
  * @author rlh
  * @project auth-service
- * @date May 2023
+ * @date August 2023
  */
 @Component
 class CustomAuthenticationProvider(@Lazy
@@ -93,6 +93,8 @@ class CustomAuthenticationProvider(@Lazy
                             )
                         ),
                         password, user.grantedAuthorities)
+                logger.debug("Logged user with roles and granted authorities:")
+                user.grantedAuthorities.forEach { authority -> logger.debug("     - ${authority.authority}") }
 
                 return res
             } catch(e: Exception) {

@@ -39,7 +39,7 @@ import java.util.function.Consumer;
  * For more information @see: https://springone.io/sessions/configuring-and-extending-spring-authorization-server
  *
  * @proyect: auth-service
- * @auth: rlh
+ * @author: rlh
  * @date: May 2023
  */
 public class CustomRequestValidator implements Consumer<OAuth2AuthorizationCodeRequestAuthenticationContext> {

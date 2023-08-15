@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import org.springframework.data.neo4j.core.schema.*
 import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.security.core.GrantedAuthority
 import java.time.LocalDateTime
 
 /**
@@ -40,7 +41,7 @@ import java.time.LocalDateTime
  *
  * @author rlh
  * @project : auth-service
- * @date May 2023
+ * @date August 2023
  *
  */
 @Node("Rol")
@@ -54,4 +55,13 @@ data class Rol (@Id @GeneratedValue(GeneratedValue.InternalIdGenerator::class) v
            @LastModifiedDate
            @Property(name = "fechaModificacion")   var fechaModificacion: LocalDateTime,
            @Relationship(type = "TIENE_FACULTAD", direction = Relationship.Direction.OUTGOING)
-                                                   var facultades: LinkedHashSet<Facultad>?)
+                                                   var facultades: LinkedHashSet<Facultad>?): GrantedAuthority {
+
+    @JsonProperty("authority")
+    override fun getAuthority() = "ROLE_" + nombre.uppercase()
+    // ^ See how this security make difference between Roles & Granted Authorities:
+    // https://www.baeldung.com/spring-security-granted-authority-vs-role
+
+    @JsonProperty("authority")
+    fun setAuthority(value: String) {}
+}

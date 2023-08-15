@@ -22,30 +22,30 @@
  */
 package com.ailegorreta.authservice.config;
 
-import jakarta.validation.constraints.NotNull;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Configuration
 
 /**
- *  Reads all configuration properties for ailegorreta
+ * Reads all configuration properties for ailegorreta
  *
  * @author rlh
  * @project : auth-service
  * @date June 2023
  */
-@ConfigurationProperties(prefix = "ailegorreta")
-public record ServiceConfig(
+@Configuration
+class ServiceConfig {
 
-        @NotNull
-        LdapConfig ldap,
+    @Value("\${ailegorreta.ldap.uri}")
+    var ldapURI = ""
 
-        @NotNull
-        Neo4jConfig neo4j
+    @Value("\${ailegorreta.ldap.adminuser}")
+    var ldapAdminuser = ""
 
-        ) {
-        public record LdapConfig(@NotNull String uri, @NotNull String adminuser, @NotNull String credentials) {}
+    @Value("\${ailegorreta.ldap.credentials}")
+    var ldapCredentials = ""
 
-        public record Neo4jConfig(@NotNull FlywayConfig flyway) {}
+    @Value("\${ailegorreta.neo4j.flyway.locations}")
+    var neo4jFlywayLocations = ""
 
-        public record FlywayConfig(@NotNull String locations) {}
 }
 

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import org.springframework.data.neo4j.core.schema.*
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import java.time.Instant
 import java.time.LocalDateTime
@@ -43,7 +44,7 @@ import java.time.ZoneOffset
  *
  * @author rlh
  * @project : auth-service
- * @date May 2023
+ * @date August 2023
  *
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
@@ -64,7 +65,7 @@ data class Usuario(@Id @GeneratedValue(GeneratedValue.InternalIdGenerator::class
                     @Property(name = "zonaHoraria")			var zonaHoraria: String? = null,
                     @Property(name = "fechaModificacion")	var fechaModificacion: LocalDateTime) : OidcUser {
 
-    var grantedAuthorities: Collection<Facultad> = LinkedHashSet()
+    var grantedAuthorities: Collection<GrantedAuthority> = LinkedHashSet()
     var _password = nombre
     var nombreCompania = ""
 

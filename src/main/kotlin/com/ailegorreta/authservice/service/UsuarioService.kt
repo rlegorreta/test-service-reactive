@@ -32,6 +32,7 @@ import org.springframework.dao.NonTransientDataAccessResourceException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 
 /**
@@ -39,12 +40,13 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser
  *
  * @author rlh,
  * @project : auth-service
- * @date May 2022
+ * @date August 2023
  *
  */
 @Service("lmsUserDetailsService")
 class UsuarioService constructor (private val companiaRepository: CompaniaRepository,
                                   private val usuarioRepository: UsuarioRepository,
+                                  private val rolRepository: RolRepository,
                                   private val facultadRepository: FacultadRepository): UsuarioOAuthService, HasLogger {
 
     override fun loadUserByUsername(username: String): OidcUser {
@@ -58,6 +60,7 @@ class UsuarioService constructor (private val companiaRepository: CompaniaReposi
                 logger.info("Read usuario: ${usuario.nombre}")
                 // now read its granted authorities
                 usuario.grantedAuthorities = getUsuarioFacultades(usuario.nombreUsuario)
+                                             .plus(getUsuarioRoles(usuario.nombreUsuario))
                 logger.info("Read granted authorities: ${usuario.grantedAuthorities}")
 
                 // read the virtual link to compania
@@ -100,8 +103,15 @@ class UsuarioService constructor (private val companiaRepository: CompaniaReposi
      * Get all User Permits adding the extra permits and deleting the forbidden
      * permits
      */
-    private fun getUsuarioFacultades(nombreUsuario: String): Collection<Facultad> {
+    private fun getUsuarioFacultades(nombreUsuario: String): Collection<GrantedAuthority> {
         return  facultadRepository.findUsuarioFacultades(nombreUsuario)
+    }
+
+    /*
+     * Get all User Roles there must be active roles
+     */
+    private fun getUsuarioRoles(nombreUsuario: String): Collection<GrantedAuthority> {
+        return  rolRepository.findUsuarioRoles(nombreUsuario)
     }
 
 }

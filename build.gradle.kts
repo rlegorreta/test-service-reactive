@@ -35,7 +35,7 @@ repositories {
 	}
 }
 
-extra["springCloudVersion"] = "2022.0.3-SNAPSHOT"
+extra["springCloudVersion"] = "2022.0.3"
 extra["testcontainersVersion"] = "1.17.3"
 extra["otelVersion"] = "1.26.0"
 extra["ailegorreta-kit-version"] = "2.0.0"
@@ -45,6 +45,9 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.retry:spring-retry")
 	implementation ("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+	// ^ this dependency is a MUST to avoid circular references for /login view
+	// see: https://www.baeldung.com/spring-circular-view-path-error
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
 
