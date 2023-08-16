@@ -1,5 +1,5 @@
 server:
-  port: 9000
+  port: 9080
   shutdown: graceful
   tomcat:
     connection-timeout: 2s
@@ -10,7 +10,7 @@ server:
 
 spring:
   application:
-    name: auth-service
+    name: test-service-reactive
   lifecycle:
     timeout-per-shutdown-phase: 15s
   config:
@@ -26,28 +26,45 @@ spring:
         initial-interval: 1000        # Initial retry interval for backoff (ms)
         max-interval: 2000            # Maximum retry interval for backoff (ms)
         multiplier: 1.1               # Multiplier to compute the next interval
-  jpa:
-    open-in-view: true
-  flyway:
-    enabled: true
-    locations: classpath:/db/migration
+  profiles:
+    active: kubernetes
+  security:
+    oauth2:
+      client:
+        registration:
+          test-service-reactive-credentials:
+            provider: spring
+            client-id: test-service-reactive
+            client-secret: test-service-reactive-secret
+            authorization-grant-type: client_credentials
+            scope: iam.facultad
+            client-name: test-service-reactive-credentials
+        provider:
+          spring:
+            issuer-uri: http://auth:9000
+        rest:
+          client-id: test-service-reactive-credentials
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth:9000
+  r2dbc:                    # we do not create a docker-compose postgres (we could) because we just test it
+    username: user
+    password: password
+    url: r2dbc:postgresql://localhost:5432/testsevicereactivedb_order
+    pool:
+      max-create-connection-time: 2s    # The maximum time to wait to get a connection from the pool
+      initial-size: 5                   # The initial size of the connection pool
+      max-size: 10                      # The maximum number of connections kept in the pool
+  flyway:                               # Flyway is utilized to fill data in the postgres test container
+    user: ${spring.r2dbc.username}
+    password: ${spring.r2dbc.password}
+    url: jdbc:postgresql://localhost:5432/testsevicereactivedb_order
+security:
+  clientId: test-service-reactive      # Needed by the AuthServerUserLookupService class
 
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
-
-logging:
-  level:
-    root: WARN
-    com:
-      netflix: WARN
-      ailegorreta:
-        authservice: WARN
-        authservice.config: DEBUG
-    org:
-      springframework:
-        web: WARN
-        security: WARN
+        include: refresh
 
