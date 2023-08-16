@@ -21,7 +21,7 @@ For further reference, please consider the following sections:
 * [OAuth2 Resource Server](https://docs.spring.io/spring-boot/docs/3.1.2/reference/htmlsingle/index.html#web.security.oauth2.server)
 
 ### Guides
-The following guides illustrate how to use some features concretely:
+The following guides illustrate how to use some features concretely: ok
 
 * [Building a Reactive RESTful Web Service](https://spring.io/guides/gs/reactive-rest-service/)
 
